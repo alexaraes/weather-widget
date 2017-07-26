@@ -1,0 +1,28 @@
+html {
+	font-family: 'Trebuchet MS', Sans-serif;
+}
+
+.header {
+	text-align: center;
+}
+
+.forecast {
+	margin-top: 50px;
+}
+
+.forecast-list {
+	display: flex;
+	justify-content: center;
+	margin: 25;
+}
+
+.forecast-temp {
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.forecast-high {
+	font-size: 25px;
+}
