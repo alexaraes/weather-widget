@@ -6,10 +6,11 @@ import Skycons from 'react-skycons';
 class ForecastBody extends React.Component {
 	constructor(props) {
 		super(props);
+		console.log(this.props.weather);
 	}
 
 	capitalizeIconName() {
-		return this.props.icon.toUpperCase().split('-').join('_');
+		return this.props.weather.icon.toUpperCase().split('-').join('_');
 	}
 
 	roundTemp(temp) {
@@ -18,12 +19,12 @@ class ForecastBody extends React.Component {
 
 	render() {
 		var icon = this.capitalizeIconName();
-		var lowTemp = this.roundTemp(this.props.lowTemp);
-		var highTemp = this.roundTemp(this.props.highTemp);
+		var lowTemp = this.roundTemp(this.props.weather.temperatureMin);
+		var highTemp = this.roundTemp(this.props.weather.temperatureMax);
 
 		return (
 			<div className="forecast">
-				<Skycons color="black" icon={icon} style={{width: '200px'}} />
+				<Skycons color="black" icon={icon} style={{width: '150px', marginBottom: '10px'}} />
 				<div className="forecast-temp">
 					<div className="forecast-high">{highTemp}&deg;</div>
 					<div className="forecast-low">{lowTemp}&deg;</div>

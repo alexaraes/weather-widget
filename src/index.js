@@ -5,83 +5,91 @@ import config from './config.js';
 import './index.css';
 
 import ForecastBody from './components/ForecastBody.js';
-import ForecastHeader from './components/ForecastHeader.js';
+import SearchBar from './components/SearchBar'
 
 const weatherApi = config.forecastUrl;
 const weatherKey = config.forecastKey;
-const locationApi = config.locationUrl;
-const locationKey = config.locationKey;
 
 class WeatherApp extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       error: '',
-      lat: null,
-      lng: null,
+      lat: 30.2671530,
+      lng: -97.7430610,
       location: '',
       forecast: []
     };
+
+    this.searchWeather = this.searchWeather.bind(this);
+
   }
 
-  componentWillMount() {
-    this.getLocation();
+  componentDidMount() {
+  	this.fetchForecast();
   }
 
-  getLocation() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        this.handleSuccess,
-        this.handleError,
-        { enableHighAccuracy: true, timeout: 30000, maximumAge: 30000 },
-      );
-    }
+  searchWeather(event, address) {
+  	event.preventDefault();
+  	this.setState({ location: address });
+  	console.log('searchweather:', this.state.location);
+
   }
 
-  handleSuccess = (position) => {
-    this.setState({ lat: position.coords.latitude, lng: position.coords.longitude });
+  // geocodeAddress(e, address) {
+  // 	e.preventDefault();
+  // 	this.searchWeather(address).bind(this);
+  //   // this.geocoder.geocode({ 'address': address }, function handleResults(results, status) {
 
-    this.fetchForecast();
-    this.fetchLocation();
-  }
+  //   //   if (status === google.maps.GeocoderStatus.OK) {
 
-  handleError = (error) => {
-    if (error.code === 1) {
-      this.setState({ error: 'Please allow location permissions' });
-    }
-    else {
-    	console.log(error);
-    	this.setState({ error: 'Woopsie doodles, something happened.'})
-    }
-  }
+  //   //     this.setState({
+  //   //       foundAddress: results[0].formatted_address,
+  //   //       isGeocodingError: false
+  //   //     });
 
-  fetchLocation() {
-  	request
-  	.get(locationApi+this.state.lat+','+this.state.lng+'&key='+locationKey)
-  	.accept('jsonp')
-  	.end((err, res) => {
-  		this.setState({ location: res.body.results[4].formatted_address })
-  	});
-  }
+  //   //     this.map.setCenter(results[0].geometry.location);
+  //   //     this.marker.setPosition(results[0].geometry.location);
+
+  //   //     return;
+  //   //   }
+
+  //   //   this.setState({
+  //   //     foundAddress: null,
+  //   //     isGeocodingError: true
+  //   //   });
+
+  //   //   this.map.setCenter({
+  //   //     lat: ATLANTIC_OCEAN.latitude,
+  //   //     lng: ATLANTIC_OCEAN.longitude
+  //   //   });
+
+  //   //   this.marker.setPosition({
+  //   //     lat: ATLANTIC_OCEAN.latitude,
+  //   //     lng: ATLANTIC_OCEAN.longitude
+  //   //   });
+
+  //   // }.bind(this));
+  // }
 
   fetchForecast() {
+  	console.log('hello');
   	request
-  	.get(weatherApi+weatherKey+'/'+this.state.lat+','+this.state.lng)
+  	.get(weatherApi+weatherKey+'/30.2671530,-97.7430610')
   	.accept('jsonp')
   	.end((err, res) => {
+  		console.log(res);
     	this.setState({ forecast: res.body.daily.data });
-    	console.log(this.state);
   	});
   }
 
   renderForecastedWeather() {
-  	console.log(this.state);
     if (this.state.forecast && this.state.location) {
       const data = this.state.forecast;
       console.log(data);
       return data.map(weather => (
   		<div className="forecast-list-item" key={weather.time}>
-          <ForecastBody icon={weather.icon} highTemp={weather.temperatureMax} lowTemp={weather.temperatureMin} />
+          <ForecastBody weather={weather} />
         </div>
         
         ));
@@ -89,10 +97,14 @@ class WeatherApp extends React.Component {
   }
 
   render() {
-    
     return (
       <div className="forecast">
-      	<ForecastHeader location={this.state.location} />
+      	<SearchBar
+      		onCityChange={this.onCityChange}
+          	onSearch={this.searchWeather}
+          	value={this.state.value}
+        />
+      	<h1>Weather for {this.state.location}</h1>
           <div className="forecast-list">
 	          {this.renderForecastedWeather()}
 	        </div>
