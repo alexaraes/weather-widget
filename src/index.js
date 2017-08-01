@@ -15,7 +15,6 @@ const locationKey = config.locationKey;
 class WeatherApp extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
 		error: '',
 		lat: 30.2671530,
@@ -25,6 +24,7 @@ class WeatherApp extends React.Component {
     };
 
     this.searchWeather = this.searchWeather.bind(this);
+    this.onCityChange = this.onCityChange.bind(this);
     
   }
 
@@ -33,8 +33,10 @@ class WeatherApp extends React.Component {
   }
 
   searchWeather(address) {
-  	this.setState({ location: address })
   	this.geocodeAddress(this.state.location);
+  }
+  onCityChange(address) {
+ 	this.setState({ location: address });
   }
 
   geocodeAddress(address) {
@@ -42,14 +44,11 @@ class WeatherApp extends React.Component {
   	.get(locationApi + address + '&key=' + locationKey)
   	.accept('json')
   	.end((err, res) => {
-
   		this.setState({
   			lat: res.body.results[0].geometry.location.lat,
   			lng: res.body.results[0].geometry.location.lng,
   		});
-
   		this.fetchForecast();
-
   	});
   }
 

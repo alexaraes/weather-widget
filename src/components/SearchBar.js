@@ -10,6 +10,7 @@ class SearchBar extends React.Component {
 	    super(props);
 
 	    this.handleSubmit = this.handleSubmit.bind(this);
+	    this.handleChange = this.handleChange.bind(this);
 	   
 	  }
 
@@ -18,6 +19,10 @@ class SearchBar extends React.Component {
 	    this.props.onSearch(this.refs.input.value);
 	    
 	  }
+	  handleChange(event) {
+	  	event.preventDefault();
+	  	this.props.onCityChange(event.target.value);
+	  }
 
 	  render() {
 	    return (
@@ -25,7 +30,7 @@ class SearchBar extends React.Component {
 		      <div>
 		        <label>
 		        	Search the forecast for your city: 
-		          <input className="search-bar" ref="input" type="text" value={this.props.value} />
+		          <input className="search-bar" ref="input" type="text" onChange={this.handleChange} />
 		        </label>
 		        <input type="submit" value="Submit" onClick={this.handleSubmit} />
 		      </div>
