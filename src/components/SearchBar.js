@@ -10,25 +10,32 @@ class SearchBar extends React.Component {
 	    super(props);
 
 	    this.handleSubmit = this.handleSubmit.bind(this);
+	    this.handleChange = this.handleChange.bind(this);
 	  }
 
 	  handleSubmit(event) {
-	    this.props.searchWeather(event.target.value);
-	    event.preventDefault();
+	  	event.preventDefault();
+	    this.props.onSearch(this.props.value);
+	    
+	  }
+
+	  handleChange(event) {
+	  	this.props.onCityChange(event.target.value);
+	  	event.preventDefault();
 	  }
 
 	  render() {
 	    return (
-	      <form onSubmit={this.handleSubmit}>
+	      <div>
 	        <label>
 	          Name: {this.props.value}
-	          <input type="text" value={this.props.value} />
+	          <input type="text" value={this.props.value} onChange={this.handleChange}/>
 	        </label>
-	        <input type="submit" value="Submit" />
-	      </form>
+	        <input type="submit" value="Submit" onClick={this.handleSubmit} />
+	      </div>
 	    );
 	  }
-	// f
+	
 	// constructor() {
 	// 	super();
 
