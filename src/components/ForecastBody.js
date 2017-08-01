@@ -6,7 +6,7 @@ import Skycons from 'react-skycons';
 class ForecastBody extends React.Component {
 	constructor(props) {
 		super(props);
-		console.log(this.props.weather);
+		
 	}
 
 	capitalizeIconName() {

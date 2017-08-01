@@ -9,10 +9,13 @@ import SearchBar from './components/SearchBar'
 
 const weatherApi = config.forecastUrl;
 const weatherKey = config.forecastKey;
+const locationApi = config.locationUrl;
+const locationKey = config.locationKey;
 
 class WeatherApp extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
 		error: '',
 		lat: 30.2671530,
@@ -22,7 +25,7 @@ class WeatherApp extends React.Component {
     };
 
     this.searchWeather = this.searchWeather.bind(this);
-    this.onCityChange = this.onCityChange.bind(this);
+    
   }
 
   componentDidMount() {
@@ -30,65 +33,38 @@ class WeatherApp extends React.Component {
   }
 
   searchWeather(address) {
-  	
-  	console.log('searching', this.state.location);
+  	this.setState({ location: address })
+  	this.geocodeAddress(this.state.location);
   }
 
-  onCityChange(address) {
-  	this.setState({ location: address });
-  	console.log('changing:', this.state.location);
+  geocodeAddress(address) {
+  	request
+  	.get(locationApi + address + '&key=' + locationKey)
+  	.accept('json')
+  	.end((err, res) => {
+
+  		this.setState({
+  			lat: res.body.results[0].geometry.location.lat,
+  			lng: res.body.results[0].geometry.location.lng,
+  		});
+
+  		this.fetchForecast();
+
+  	});
   }
 
-  geocodeAddress(e, address) {
-  	e.preventDefault();
-  	this.searchWeather(address).bind(this);
-    // this.geocoder.geocode({ 'address': address }, function handleResults(results, status) {
-
-    //   if (status === google.maps.GeocoderStatus.OK) {
-
-    //     this.setState({
-    //       foundAddress: results[0].formatted_address,
-    //       isGeocodingError: false
-    //     });
-
-    //     this.map.setCenter(results[0].geometry.location);
-    //     this.marker.setPosition(results[0].geometry.location);
-
-    //     return;
-    //   }
-
-    //   this.setState({
-    //     foundAddress: null,
-    //     isGeocodingError: true
-    //   });
-
-    //   this.map.setCenter({
-    //     lat: ATLANTIC_OCEAN.latitude,
-    //     lng: ATLANTIC_OCEAN.longitude
-    //   });
-
-    //   this.marker.setPosition({
-    //     lat: ATLANTIC_OCEAN.latitude,
-    //     lng: ATLANTIC_OCEAN.longitude
-    //   });
-
-    // }.bind(this));
-  }
-
-  fetchForecast(lat, lng) {
-  	console.log('hello');
+  fetchForecast() {
   	request
   	.get(weatherApi+weatherKey+'/'+ this.state.lat + ',' + this.state.lng)
   	.accept('jsonp')
   	.end((err, res) => {
-  		console.log(res);
     	this.setState({ forecast: res.body.daily.data });
   	});
   }
 
   renderForecastedWeather() {
       const data = this.state.forecast;
-      console.log(data);
+      
       return data.map(weather => (
   		<div className="forecast-list-item" key={weather.time}>
           <ForecastBody weather={weather} />
@@ -102,9 +78,8 @@ class WeatherApp extends React.Component {
       	<SearchBar
       		onCityChange={this.onCityChange}
           	onSearch={this.searchWeather}
-          	value={this.state.value}
+          	location={this.state.location}
         />
-      	<h1>Weather for {this.state.location}</h1>
           <div className="forecast-list">
 	          {this.renderForecastedWeather()}
 	        </div>
