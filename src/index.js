@@ -44,11 +44,17 @@ class WeatherApp extends React.Component {
   	.get(locationApi + address + '&key=' + locationKey)
   	.accept('json')
   	.end((err, res) => {
-  		this.setState({
-  			lat: res.body.results[0].geometry.location.lat,
-  			lng: res.body.results[0].geometry.location.lng,
-  		});
-  		this.fetchForecast();
+  		if(res) {
+  			this.setState({
+	  			lat: res.body.results[0].geometry.location.lat,
+	  			lng: res.body.results[0].geometry.location.lng,
+	  		});
+	  		this.fetchForecast();
+  		}
+  		else {
+  			console.log(err);
+  		}
+  		
   	});
   }
 
@@ -57,7 +63,13 @@ class WeatherApp extends React.Component {
   	.get(weatherApi+weatherKey+'/'+ this.state.lat + ',' + this.state.lng)
   	.accept('jsonp')
   	.end((err, res) => {
-    	this.setState({ forecast: res.body.daily.data });
+  		if(res) {
+  			this.setState({ forecast: res.body.daily.data });
+  		}
+  		else {
+  			console.log(err);
+  		}
+    	
   	});
   }
 
